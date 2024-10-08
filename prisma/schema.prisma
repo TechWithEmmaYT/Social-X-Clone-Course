@@ -1,0 +1,129 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_DATABASE_URL")
+}
+
+enum Plans {
+  FREE
+  PRO
+}
+
+
+
+model User{
+  id Int @id @default(autoincrement())
+  name String
+  username String? @unique
+  bio String?
+  email String @unique
+  dateOfBirth DateTime?
+  emailVerified DateTime?
+  coverImage String?
+  profileImage String?
+  hashedPassword String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  followingIds Int[]
+  hasNotification Boolean?
+
+  isVerifed Boolean @default(false)
+  subscription Subscription?
+
+  accounts Account[]
+  posts   Post[]
+  comments Comment[]
+  notifications Notification[]
+
+  @@map("users")
+}
+
+model Account {
+  id                 Int @id @default(autoincrement())
+  userId             Int
+  type               String
+  provider           String
+  providerAccountId  String  @map("provider_account_id")
+  refresh_token      String? @db.Text
+  access_token       String? @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String? @db.Text
+  session_state      String?
+ 
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+ 
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Subscription {
+  id           Int @id @default(autoincrement())
+  userId        Int @unique
+  plan    Plans @default(FREE)
+  stripeCustomerId String? @unique @map(name:"stripe_customer_id")
+  stripeSubscriptionId String? @unique @map(name:"stripe_subscription_id")
+  stripePriceId String? @map(name:"stripe_price_id")
+  stripeCurrentPeriodEnd DateTime? @map(name:"stripe_current_period_end")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("subscriptions")
+}
+
+model Post {
+  id                 Int @id @default(autoincrement())
+  userId             Int
+  body String
+  postImage String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  likeIds Int[]
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comments Comment[]
+
+
+ @@map("posts")
+}
+
+model Comment{
+  id                 Int @id @default(autoincrement())
+  userId             Int
+  postId             Int
+  body String
+  commentImage String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@map("comments")
+
+}
+
+model Notification{
+  id                 Int @id @default(autoincrement())
+  userId             Int
+  body             String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+
+}
