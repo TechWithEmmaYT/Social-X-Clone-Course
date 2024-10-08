@@ -25,6 +25,7 @@
     "bcryptjs": "^2.4.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
     "draft-js": "^0.11.7",
     "draftjs-to-html": "^0.9.1",
     "lucide-react": "^0.447.0",
@@ -36,12 +37,14 @@
     "react-draft-wysiwyg": "^1.15.0",
     "react-dropzone": "^14.2.9",
     "react-hook-form": "^7.53.0",
+    "stripe": "^17.1.0",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.23.8",
     "zustand": "^5.0.0-rc.2"
   },
   "devDependencies": {
+    "@svgr/webpack": "^8.1.0",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
